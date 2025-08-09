@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E = mc² | PulseChain Memecoin</title>
+    
+    <!-- Google Fonts - Inconsolata -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inconsolata:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Variables for easy customization */
+        :root {
+          --bg-primary: rgba(74, 36, 139, 0.85);
+            --text-primary: #dfeee0;
+            --text-accent: #8ef078;
+            --text-bright: #ffffff;
+            --overlay-dark: rgba(0, 0, 0, 0.35);
+            --border-radius: 12px;
+            --max-width: 900px;
+            --padding-desktop: 2rem;
+            --padding-mobile: 1rem;
+            --font-family: 'Inconsolata', monospace;
+        }
+
+        /* Terminal Window Styling */
+        .terminal {
+            background: var(--bg-primary);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            border-radius: var(--border-radius);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.1);
+            max-width: var(--max-width);
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal-content {
+            padding: 1.5rem;
+            line-height: 1.6;
+        }
+
+        /* Terminal Lines */
+        .terminal-line {
+            margin: 0.5rem 0;
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .prompt {
+            color: var(--text-accent);
+            margin-right: 0.5rem;
+            font-weight: 700;
+        }
+
+        /* Title styling */
+        .title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-bright);
+            margin-bottom: 1rem;
+        }
+
+        /* Formula and conclusion emphasis */
+        .formula, .conclusion {
+            color: var(--text-accent);
+            font-weight: 700;
+        }
+
+        /* Ticker container */
+        .ticker-container {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .ticker {
+            color: var(--text-bright);
+            font-weight: 700;
+            cursor: pointer;
+            padding: 0.2rem 0.5rem;
+            border-radius: 4px;
+            transition: background-color 0.2s ease;
+        }
+
+        .ticker:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Copy button */
+        .copy-btn {
+            background: none;
+            border: none;
+            color: var(--text-accent);
+            cursor: pointer;
+            padding: 0.2rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .copy-btn:hover {
+            color: var(--text-bright);
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Logo container */
+        .logo-container {
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .logo {
+            max-width: 160px;
+            height: auto;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        /* Social container */
+        .social-container {
+            margin: 0.5rem 0;
+        }
+
+        .telegram-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-accent);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--text-accent);
+            border-radius: 20px;
+            transition: all 0.2s ease;
+            font-weight: 700;
+        }
+
+        .telegram-link:hover {
+            color: var(--text-bright);
+            border-color: var(--text-bright);
+            box-shadow: 0 0 10px rgba(142, 240, 120, 0.3);
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 767px) {
+            .terminal-content {
+                padding: 1rem;
+            }
+            
+            .title {
+                font-size: 1.4rem;
+            }
+            
+            .logo {
+                max-width: 96px;
+            }
+            
+            .terminal-line {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Enhanced Interactive Elements */
+        .copy-btn:focus {
+            outline: 2px solid var(--text-accent);
+            outline-offset: 2px;
+        }
+
+        .ticker:focus {
+            outline: 2px solid var(--text-accent);
+            outline-offset: 2px;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .telegram-link:focus {
+            outline: 2px solid var(--text-accent);
+            outline-offset: 2px;
+        }
+
+        /* Tooltip styling */
+        .tooltip {
+            position: absolute;
+            background: var(--text-accent);
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            top: 20%;
+            right: 2rem;
+            z-index: 10;
+        }
+
+        .tooltip.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border: 5px solid transparent;
+            border-top-color: var(--text-accent);
+        }
+
+        /* Enhanced button styling */
+        .copy-btn, .ticker {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .copy-btn:active, .ticker:active {
+            transform: scale(0.95);
+        }
+
+        .telegram-link:active {
+            transform: translateY(1px);
+        }
+
+        /* Logo link focus state */
+        .logo-container a:focus {
+            outline: 2px solid var(--text-accent);
+            outline-offset: 4px;
+            border-radius: 50%;
+        }
+
+        /* Typography enhancements */
+        .title {
+            text-shadow: 0 0 10px rgba(142, 240, 120, 0.3);
+        }
+
+        .formula, .conclusion {
+            text-shadow: 0 0 8px rgba(142, 240, 120, 0.2);
+        }
+
+        /* Blinking cursor animation */
+        .cursor {
+            animation: blink 1s infinite;
+            color: var(--text-accent);
+            font-weight: 700;
+        }
+
+        @keyframes blink {
+            0%, 50% {
+                opacity: 1;
+            }
+            51%, 100% {
+                opacity: 0;
+            }
+        }
+
+        /* Fade-in animation on load */
+        .terminal {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Terminal lines staggered animation */
+        .terminal-line {
+            opacity: 0;
+            transform: translateX(-10px);
+            animation: slideIn 0.5s ease-out forwards;
+        }
+
+        .terminal-line:nth-child(1) { animation-delay: 0.2s; }
+        .terminal-line:nth-child(2) { animation-delay: 0.3s; }
+        .terminal-line:nth-child(3) { animation-delay: 0.4s; }
+        .terminal-line:nth-child(4) { animation-delay: 0.5s; }
+        .terminal-line:nth-child(5) { animation-delay: 0.6s; }
+        .terminal-line:nth-child(6) { animation-delay: 0.7s; }
+        .terminal-line:nth-child(7) { animation-delay: 0.8s; }
+        .terminal-line:nth-child(8) { animation-delay: 0.9s; }
+
+        .logo-container {
+            opacity: 0;
+            animation: slideIn 0.5s ease-out 1s forwards;
+        }
+
+        .social-container {
+            opacity: 0;
+            animation: slideIn 0.5s ease-out 1.2s forwards;
+        }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Reduced motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            .cursor {
+                animation: none;
+                opacity: 1;
+            }
+            
+            .terminal, .terminal-line, .logo-container, .social-container {
+                animation: none;
+                opacity: 1;
+                transform: none;
+            }
+            
+            .copy-btn, .ticker, .telegram-link, .logo {
+                transition: none;
+            }
+        }
+
+        /* Mobile-specific optimizations */
+        @media (max-width: 767px) {
+            .container {
+                padding: 0.5rem;
+                align-items: flex-start;
+                padding-top: 2rem;
+            }
+            
+            .terminal {
+                margin-top: 1rem;
+                max-height: calc(100vh - 4rem);
+                overflow-y: auto;
+            }
+            
+            .terminal-content {
+                padding: 1rem 0.8rem;
+            }
+            
+            .title {
+                font-size: 1.2rem;
+                margin-bottom: 0.8rem;
+            }
+            
+            .terminal-line {
+                margin: 0.3rem 0;
+                font-size: 0.85rem;
+            }
+            
+            .logo {
+                max-width: 80px;
+            }
+            
+            .telegram-link {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
+            }
+            
+            .copy-btn svg {
+                width: 14px;
+                height: 14px;
+            }
+            
+            .tooltip {
+                right: 1rem;
+                font-size: 0.7rem;
+                padding: 0.3rem 0.6rem;
+            }
+        }
+
+        /* Tablet optimizations */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .terminal-content {
+                padding: 2rem 1.5rem;
+            }
+            
+            .title {
+                font-size: 1.6rem;
+            }
+            
+            .logo {
+                max-width: 120px;
+            }
+        }
+
+        /* Large desktop optimizations */
+        @media (min-width: 1440px) {
+            .container {
+                padding: 3rem;
+            }
+            
+            .terminal {
+                max-width: 1000px;
+            }
+            
+            .terminal-content {
+                padding: 2.5rem;
+            }
+            
+            .title {
+                font-size: 2rem;
+            }
+            
+            .logo {
+                max-width: 180px;
+            }
+        }
+
+        /* High DPI display optimizations */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 2dppx) {
+            .terminal {
+                border: 0.5px solid rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        /* Dark mode and accessibility */
+        @media (prefers-contrast: high) {
+            :root {
+                --text-primary: #ffffff;
+                --text-accent: #00ff00;
+                --bg-primary: rgba(0, 0, 0, 0.95);
+            }
+            
+            .terminal {
+                border: 2px solid var(--text-accent);
+            }
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            
+            .terminal {
+                background: white;
+                border: 2px solid black;
+                box-shadow: none;
+            }
+            
+            .cursor {
+                display: none;
+            }
+        }
+
+        /* CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Base Styles */
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: var(--font-family);
+            color: var(--text-primary);
+            min-height: 100vh;
+            background-image: url('bg.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        /* Dark overlay for background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--overlay-dark);
+            z-index: -1;
+        }
+
+        /* Main container setup */
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: var(--padding-mobile);
+        }
+
+        /* Responsive framework */
+        @media (min-width: 768px) {
+            .container {
+                padding: var(--padding-desktop);
+            }
+            
+            html {
+                font-size: 18px;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            html {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main container -->
+    <div class="container">
+        <!-- Terminal Window -->
+        <div class="terminal">
+            <div class="terminal-content">
+                <!-- Main title -->
+
+               
+                <div class="terminal-line title">
+                    <span class="prompt">&gt;</span> E = mc²
+                </div>
+                
+                <!-- Ticker with copy functionality -->
+                <div class="terminal-line">
+                    <span class="prompt">&gt;</span> Ticker: 
+                    <span class="ticker-container">
+                        <span class="ticker" id="ticker">pE = mc²</span>
+                        <button class="copy-btn" id="copyBtn" aria-label="Copy ticker to clipboard">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                        </button>
+                    </span>
+                </div>
+                
+                <!-- Chain info -->
+                <div class="terminal-line">
+                    <span class="prompt">&gt;</span> Chain: Pulsechain
+                </div>
+                
+                <!-- Formula -->
+                <div class="terminal-line formula">
+                    <span class="prompt">&gt;</span> P = Ip²
+                </div>
+                
+                <!-- Explanation block -->
+                <div class="terminal-line">
+                    <span class="prompt">&gt;</span> P = PulseChain Energy  (unstoppable pump force)
+                </div>
+                <div class="terminal-line">
+                    <span class="prompt">&gt;</span> I = Liquidity depth
+                </div>
+                <div class="terminal-line">
+                    <span class="prompt">&gt;</span> p = Pulse speed  (fast finality + low fees)
+                </div>
+                
+                <!-- Conclusion -->
+                <div class="terminal-line conclusion">
+                    <span class="prompt">&gt;</span> More liquidity × Pulse speed² = Infinite Pump Energy
+                </div>
+                
+                <!-- Logo section -->
+                <div class="terminal-line">
+                    <span class="prompt">&gt;</span> IMG:
+                </div>
+                <div class="logo-container">
+                    <a href="" target="_blank" rel="noopener">
+                        <img src="logo.jpg" alt="E = mc² logo" class="logo" />
+                    </a>
+                </div>
+                
+                <!-- Social section -->
+                <div class="terminal-line">
+                    <span class="prompt">&gt;</span> SOCIAL:
+                </div>
+                <div class="social-container">
+                    <a href="https://t.me/YourChannel" target="_blank" rel="noopener" class="telegram-link">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+                        </svg>
+                        Telegram
+                    </a>
+                </div>
+                
+                <!-- Blinking cursor -->
+                <div class="terminal-line">
+                    <span class="prompt">&gt;</span><span class="cursor">_</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
